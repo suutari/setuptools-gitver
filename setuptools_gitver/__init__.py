@@ -29,5 +29,5 @@ def do_git_describe(base_version):
         decoded = output.decode('utf-8', errors='ignore')
         if decoded and decoded.startswith(ver):
             (count, rest) = decoded[len(ver):].lstrip('-').split('-', 1)
-            return (count, rest)
-    return (0, decoded)
+            return (count, rest.strip())
+    return ('0', decoded)
