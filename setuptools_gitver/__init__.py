@@ -31,8 +31,8 @@ def do_git_describe(base_version):
     for ver in ['v' + base_version, base_version]:
         pipe = subprocess.Popen(cmd + [ver], stdout=subprocess.PIPE)
         (output, _) = pipe.communicate()
-        decoded = output.decode('utf-8', errors='ignore')
+        decoded = output.decode('utf-8', errors='ignore').strip()
         if decoded and decoded.startswith(ver):
             (count, rest) = decoded[len(ver):].lstrip('-').split('-', 1)
-            return (count, rest.strip())
+            return (count, rest)
     return ('0', decoded)
