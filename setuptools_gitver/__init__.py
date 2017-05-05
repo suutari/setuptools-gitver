@@ -3,10 +3,15 @@ import subprocess
 import pkg_resources
 from setuptools.command.egg_info import egg_info
 
-try:
-    __version__ = pkg_resources.get_distribution(__name__).version
-except pkg_resources.DistributionNotFound:
-    __version__ = None
+
+def get_version(name):
+    try:
+        return pkg_resources.get_distribution(name).version
+    except pkg_resources.DistributionNotFound:
+        return None
+
+
+__version__ = get_version(__name__)
 
 
 class EggInfoCommand(egg_info):
