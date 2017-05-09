@@ -1,7 +1,7 @@
 import subprocess
 
 import pkg_resources
-from setuptools.command.egg_info import egg_info
+from setuptools.command import egg_info as egg_info_mod
 
 
 def get_version(name):
@@ -14,11 +14,15 @@ def get_version(name):
 __version__ = get_version(__name__)
 
 
-class EggInfoCommand(egg_info):
+if '_OriginalEggInfoCommand' not in globals():
+    _OriginalEggInfoCommand = egg_info_mod.egg_info
+
+
+class EggInfoCommand(_OriginalEggInfoCommand):
     command_name = 'egg_info'
 
     def tagged_version(self):
-        version = egg_info.tagged_version(self)
+        version = _OriginalEggInfoCommand.tagged_version(self)
         if version.lower().endswith('+gitver'):
             parsed_ver = pkg_resources.parse_version(version)
             (count, suffix) = do_git_describe(parsed_ver.base_version)
@@ -36,3 +40,22 @@ def do_git_describe(base_version):
             (count, rest) = decoded[len(ver):].lstrip('-').split('-', 1)
             return (count, rest)
     return ('0', decoded)
+
+
+def handle_gitver_keyword(dist, attr, value):
+    if attr == 'gitver' and not value:
+        unpatch_egg_info_command()
+
+
+def patch_egg_info_command():
+    # Replace the original setuptools egg_info command with our own
+    if egg_info_mod.egg_info == _OriginalEggInfoCommand:
+        egg_info_mod.egg_info = EggInfoCommand
+
+
+def unpatch_egg_info_command():
+    egg_info_mod.egg_info = _OriginalEggInfoCommand
+
+
+# Patch the egg_info command by default
+patch_egg_info_command()

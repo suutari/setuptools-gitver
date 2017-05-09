@@ -6,9 +6,9 @@ Simple Git version plugin for setuptools.
 Usage
 -----
 
-Add ``setuptools-gitver`` to ``setup_requires`` in the ``setup.py`` of
-your project.  Then, after each release, add ``.post+gitver`` suffix to
-the version string.
+Modify the ``setup.py`` of your project and add ``setuptools-gitver`` to
+``setup_requires`` and add keyword argument ``gitver=True``.  Then,
+after each release, add ``.post+gitver`` suffix to the version string.
 
 For example, in ``setup.py``::
 
@@ -16,9 +16,10 @@ For example, in ``setup.py``::
 
   if __name__ == '__main__':
       setuptools.setup(
-          setup_requires=['setuptools-gitver'],
           name='example-package',
           version='1.2.3.post+gitver',
+          setup_requires=['setuptools-gitver'],
+          gitver=True,
       )
 
 This will then generate version numbers like 1.2.3.post0.dev7+ga1b2c3d
